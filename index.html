@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stochastic Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="overlay-menu" data-menu="overlay" aria-hidden="true">
+    <button class="overlay-menu__close" data-menu="close" aria-label="Close navigation">
+      <span></span><span></span>
+    </button>
+    <nav id="mobile-menu" class="overlay-menu__nav" aria-label="Quant navigation">
+      <a href="index.html" class="overlay-link is-active">Stochastic Analysis</a>
+      <a href="market-risk.html" class="overlay-link">Market Risk</a>
+      <a href="counterparty-risk.html" class="overlay-link">Counterparty Credit Risk</a>
+      <a href="interest-rate-models.html" class="overlay-link">Interest Rate Models</a>
+      <a href="resume.html" class="overlay-link">Resume</a>
+    </nav>
+  </div>
+
+  <header class="site-header" data-menu="bar">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">Stochastic Lab</a>
+      <button class="nav-toggle" data-menu="toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a class="desktop-nav__link is-active" href="index.html">Stochastic Analysis</a>
+        <a class="desktop-nav__link" href="market-risk.html">Market Risk</a>
+        <a class="desktop-nav__link" href="counterparty-risk.html">Counterparty Credit Risk</a>
+        <a class="desktop-nav__link" href="interest-rate-models.html">Interest Rate Models</a>
+        <a class="desktop-nav__link" href="resume.html">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-layout">
+    <aside class="page-nav" aria-label="On-page navigation">
+      <h2 class="page-nav__title">On this page</h2>
+      <ol class="page-nav__list">
+        <li><a class="page-nav__link is-active" href="#brownian-motion">Brownian Motion</a></li>
+        <li><a class="page-nav__link" href="#martingales">Martingales</a></li>
+        <li><a class="page-nav__link" href="#other-processes">Other Stochastic Processes</a></li>
+        <li><a class="page-nav__link" href="#further-reading">Further Reading</a></li>
+      </ol>
+    </aside>
+
+    <div class="page-content">
+      <section class="hero hero--glow" id="hero">
+        <div class="hero__content">
+          <p class="hero__eyebrow">Quantitative insights</p>
+          <h1>Stochastic Analysis</h1>
+          <p class="hero__tagline">
+            Modelling randomness in finance to illuminate pricing dynamics, risk transmission, and hedging decisions.
+          </p>
+          <a class="hero__cta" href="#brownian-motion">Explore the processes</a>
+        </div>
+      </section>
+
+      <section id="brownian-motion" class="page-section">
+        <div class="irm-card">
+          <span class="section-eyebrow">Diffusion foundations</span>
+          <h2>Brownian motion</h2>
+          <p>
+            Louis Bachelier first applied Brownian motion to asset prices in 1900, modelling short-term price changes as
+            independent and normally distributed.<sup><a href="#fn1">[1]</a></sup>
+          </p>
+          <p>
+            A standard Brownian motion \( (W_t)_{t \ge 0} \) (Wiener process) starts at zero, has continuous paths, and features
+            independent, normally distributed increments. It is both a martingale and a Markov process, making it an ideal
+            driver of random shocks.<sup><a href="#fn1">[1]</a></sup> Geometric Brownian motion (GBM) exponentiates Brownian
+            motion to keep simulated prices positive.
+          </p>
+          <div class="callout">
+            <strong>Diffusion equations.</strong>
+            $$ dW_t \sim \mathcal{N}(0, dt), \qquad dS_t = \mu S_t\,dt + \sigma S_t\,dW_t $$
+            Analytical moments follow \( \mathbb{E}[S_T] = S_0 e^{\mu T} \) with log-normal terminal distributions.<sup><a href="#fn1">[1]</a></sup>
+          </div>
+          <div class="market-grid market-grid--two">
+            <div class="market-subcard">
+              <h3>Key properties</h3>
+              <ul class="market-sensitivity-legend">
+                <li>Continuous paths with normally distributed increments ensure tractable analytics.<sup><a href="#fn1">[1]</a></sup></li>
+                <li>Independent increments deliver the Markov property—future moves depend only on today’s state.<sup><a href="#fn1">[1]</a></sup></li>
+                <li>Martingale behaviour under the pricing measure enables arbitrage-free valuation.</li>
+              </ul>
+            </div>
+            <div class="market-subcard">
+              <h3>How GBM powers pricing</h3>
+              <ul class="market-sensitivity-legend">
+                <li><strong>Equity &amp; FX options.</strong> Black–Scholes assumes GBM to derive closed-form call and put prices.</li>
+                <li><strong>Monte Carlo valuation.</strong> GBM drives path-dependent products such as Asian, barrier, or lookback options.</li>
+                <li><strong>Risk factor generation.</strong> VaR and stress simulations use GBM to project equity or FX moves under baseline assumptions.</li>
+              </ul>
+            </div>
+            <div class="market-subcard">
+              <h3>Modeling considerations</h3>
+              <ul class="market-sensitivity-legend">
+                <li>Drift \( \mu \) encodes the long-run growth rate; under risk-neutral pricing it is replaced by the risk-free rate.</li>
+                <li>Volatility \( \sigma \) controls dispersion and option time value; calibration anchors it to implied or historical vol.</li>
+                <li>Time discretisation (steps per year) balances realism and computational cost when simulating many paths.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="market-card market-card--stacked" id="gbmLab">
+          <div class="lab-header">
+            <h3>Geometric Brownian motion lab</h3>
+            <p>
+              Adjust the parameters to simulate GBM price paths and inspect the terminal distribution after a chosen horizon.
+              Use the risk-neutral toggle to enforce \( \mu = r \); increase the number of paths for smoother histograms.
+            </p>
+          </div>
+          <div class="gbm-layout">
+            <div class="gbm-column gbm-column--controls">
+              <form class="market-form market-panel" onsubmit="return false;" id="bmForm">
+                <div class="control-group">
+                  <label for="bmInitial">Initial price \(S_0\)</label>
+                  <input type="number" id="bmInitial" value="100" min="1" step="1" />
+                </div>
+                <div class="control-group">
+                  <label for="bmDrift">Drift \( \mu \)</label>
+                  <input type="number" id="bmDrift" value="0.08" step="0.01" />
+                </div>
+                <div class="control-group">
+                  <label for="bmRate">Risk-free rate \( r \)</label>
+                  <input type="number" id="bmRate" value="0.03" step="0.005" />
+                </div>
+                <div class="control-group">
+                  <label for="bmVol">Volatility \( \sigma \)</label>
+                  <input type="number" id="bmVol" value="0.2" min="0" step="0.01" />
+                </div>
+                <div class="control-group">
+                  <label for="bmYears">Horizon (years)</label>
+                  <input type="number" id="bmYears" value="1" min="0.1" step="0.1" />
+                </div>
+                <div class="control-group">
+                  <label for="bmPaths">Paths</label>
+                  <input type="number" id="bmPaths" value="100" min="10" max="500" step="10" />
+                </div>
+                <div class="control-group control-group--checkbox">
+                  <label class="checkbox-label" for="bmRiskNeutral">
+                    <input type="checkbox" id="bmRiskNeutral" />
+                    Use risk-neutral drift (\( \mu = r \))
+                  </label>
+                </div>
+                <button class="primary-button" id="bmSimulate">Simulate GBM</button>
+              </form>
+              <p class="gbm-tip">Toggle the risk-neutral checkbox to align pricing with \( r \); add more paths for smoother distributions.</p>
+            </div>
+            <div class="gbm-column gbm-column--charts">
+              <div class="market-subcard gbm-chart-card">
+                <div class="gbm-chart-header">
+                  <h4>Simulated paths</h4>
+                  <span>Showing up to 20 sample paths</span>
+                </div>
+                <div class="market-tail-chart market-tail-chart--fixed">
+                  <canvas id="bmPathsChart" aria-label="Simulated geometric Brownian motion paths" role="img" style="height: 300px;"></canvas>
+                </div>
+              </div>
+              <div class="market-subcard gbm-chart-card">
+                <div class="gbm-chart-header">
+                  <h4>Terminal distribution</h4>
+                  <span>Histogram of simulated prices at horizon</span>
+                </div>
+                <div class="market-tail-chart market-tail-chart--fixed">
+                  <canvas id="bmDistributionChart" aria-label="Distribution of GBM terminal prices" role="img" style="height: 300px;"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="gbm-summary" id="bmSummary">
+            <div class="summary-chip">
+              <span class="summary-label">Analytical expectation</span>
+              <span class="summary-value" id="bmExpectation">-</span>
+            </div>
+            <div class="summary-chip">
+              <span class="summary-label">Simulated mean</span>
+              <span class="summary-value" id="bmSimMean">-</span>
+            </div>
+            <div class="summary-chip">
+              <span class="summary-label">Standard deviation</span>
+              <span class="summary-value" id="bmStd">-</span>
+            </div>
+            <div class="summary-chip">
+              <span class="summary-label">5% downside</span>
+              <span class="summary-value" id="bmDownside">-</span>
+            </div>
+            <div class="summary-chip">
+              <span class="summary-label">Paths displayed</span>
+              <span class="summary-value" id="bmPathsShown">-</span>
+            </div>
+          </div>
+          <p class="market-note">Increase the number of simulated paths to stabilise the terminal distribution and benchmark the Monte Carlo results against the analytical expectation.</p>
+        </div>
+      </section>
+
+      <section id="martingales" class="page-section">
+        <div class="irm-card">
+          <span class="section-eyebrow">No-arbitrage pricing</span>
+          <h2>Martingales</h2>
+          <p>
+            A martingale keeps its conditional expectation equal to its current value—the best forecast of tomorrow is today.
+            In arbitrage-free markets the discounted asset price \( e^{-rt} S_t \) is a martingale under the risk-neutral measure,
+            which underpins consistent pricing across derivatives.<sup><a href="#fn2">[2]</a></sup>
+          </p>
+          <div class="callout">
+            <strong>No-arbitrage guarantee.</strong> If discounted prices are martingales, any zero-cost, self-financing strategy
+            has zero expected profit, locking in no-arbitrage pricing across products.<sup><a href="#fn2">[2]</a></sup>
+          </div>
+          <div class="market-grid market-grid--two">
+            <div class="market-subcard">
+              <h3>Pricing implications</h3>
+              <ul class="market-sensitivity-legend">
+                <li><strong>Risk-neutral valuation.</strong> Derivative values equal discounted expected payoffs under \( \mathbb{Q} \).</li>
+                <li><strong>Hedging consistency.</strong> Replication arguments hinge on discounted hedged portfolios forming martingales.</li>
+                <li><strong>Calibrated curves.</strong> Forward rates, discount factors, and drifts align so that tradable assets stay arbitrage-free.</li>
+              </ul>
+            </div>
+            <div class="market-subcard">
+              <h3>Risk management usage</h3>
+              <ul class="market-sensitivity-legend">
+                <li>Validates P&amp;L explain: hedged books should exhibit martingale-like behaviour under the pricing measure.</li>
+                <li>Supports exposure simulation (EE/EPE) by discounting future values to today under \( \mathbb{Q} \).</li>
+                <li>Provides a framework to stress break-even drifts when testing hedging robustness.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="market-card market-card--stacked" id="martingaleLab">
+          <h3>Risk-neutral martingale check</h3>
+          <p>
+            Simulate paths under the risk-neutral drift \( \mu = r \) and track discounted prices \( e^{-rt} S_t \).
+            The discounted expectation should remain anchored at \( S_0 \).
+          </p>
+          <div class="market-grid market-grid--two">
+            <form class="market-form market-panel" onsubmit="return false;" id="martingaleForm">
+              <div class="control-group">
+                <label for="martingaleInitial">Initial price \(S_0\)</label>
+                <input type="number" id="martingaleInitial" value="100" min="1" step="1" />
+              </div>
+              <div class="control-group">
+                <label for="martingaleRate">Risk-free rate \(r\)</label>
+                <input type="number" id="martingaleRate" value="0.03" step="0.005" />
+              </div>
+              <div class="control-group">
+                <label for="martingaleVol">Volatility \( \sigma \)</label>
+                <input type="number" id="martingaleVol" value="0.2" min="0" step="0.01" />
+              </div>
+              <div class="control-group">
+                <label for="martingaleYears">Horizon (years)</label>
+                <input type="number" id="martingaleYears" value="1" min="0.1" step="0.1" />
+              </div>
+              <div class="control-group">
+                <label for="martingalePaths">Paths</label>
+                <input type="number" id="martingalePaths" value="50" min="10" max="300" step="10" />
+              </div>
+              <button class="primary-button" id="martingaleSimulate">Simulate martingale</button>
+            </form>
+            <div class="market-subcard">
+              <div class="market-tail-chart market-tail-chart--fixed">
+                <canvas id="martingaleChart" aria-label="Discounted price paths under the risk-neutral measure" role="img"></canvas>
+              </div>
+            </div>
+          </div>
+          <p class="market-note" id="martingaleSummary"></p>
+        </div>
+      </section>
+
+      <section id="other-processes" class="page-section">
+        <div class="irm-card">
+          <span class="section-eyebrow">Beyond GBM</span>
+          <h2>Other stochastic processes</h2>
+          <p>
+            Real markets exhibit jumps, clustering, and regime shifts. Extending beyond GBM enables richer calibration to
+            observed data and more realistic stress tests.
+          </p>
+          <div class="framework-grid">
+            <div class="market-subcard">
+              <h3>Poisson &amp; jump processes</h3>
+              <p>
+                Poisson arrivals layered on diffusion capture rare events such as defaults, rating downgrades, or flash crashes.
+                They enrich models with fat tails and gap risk.
+              </p>
+              <ul class="market-sensitivity-legend">
+                <li>Pricing: jump-to-default adjustments for credit derivatives and barrier options.</li>
+                <li>Risk: scenario generation for sudden spread widening and liquidity shocks.</li>
+              </ul>
+            </div>
+            <div class="market-subcard">
+              <h3>Ornstein–Uhlenbeck (mean reversion)</h3>
+              <p>
+                Mean-reverting dynamics \( dX_t = \kappa(\theta - X_t)dt + \sigma dW_t \) model factors pulled toward a long-run level.
+              </p>
+              <ul class="market-sensitivity-legend">
+                <li>Rates: calibrate short-rate models (Vasicek, Hull–White) for yield-curve evolution.</li>
+                <li>Commodities: capture inventory effects and seasonal pulls in energy and metals markets.</li>
+              </ul>
+            </div>
+            <div class="market-subcard">
+              <h3>Hidden Markov models</h3>
+              <p>
+                Hidden Markov models infer latent market regimes, switching between high- and low-volatility states to reflect macro shifts.
+              </p>
+              <ul class="market-sensitivity-legend">
+                <li>Trading: regime-aware allocation, volatility targeting, and signal filtering.</li>
+                <li>Risk oversight: early warning dashboards and stress library triggers.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout">
+            Choose the process that mirrors your economic story: GBM for daily diffusion, jump processes for shocks, mean reversion for anchored factors, and hidden Markov models for regime detection.
+          </div>
+        </div>
+      </section>
+
+      <section id="further-reading" class="page-section">
+        <div class="irm-card">
+          <h2>Further reading</h2>
+          <ol class="footnotes">
+            <li id="fn1">
+              <strong>[1]</strong>
+              <a href="https://www.simtrade.fr/documentation_en/brownian-motion-and-related-processes.php" target="_blank" rel="noopener noreferrer">
+                SimTrade – Brownian motion and related processes
+              </a>.
+            </li>
+            <li id="fn2">
+              <strong>[2]</strong>
+              <a href="https://fiveable.me/ap-microeconomics/unit-4/martingale-theory/study-guide/xBIUrAro9Qt9t8SBYcrl" target="_blank" rel="noopener noreferrer">
+                Fiveable – Martingale theory and the risk-neutral measure
+              </a>.
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="stochastic.js"></script>
+</body>
+</html>

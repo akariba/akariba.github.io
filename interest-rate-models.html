@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interest Rate Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="overlay-menu" data-menu="overlay" aria-hidden="true">
+    <button class="overlay-menu__close" data-menu="close" aria-label="Close navigation">
+      <span></span><span></span>
+    </button>
+    <nav id="mobile-menu" class="overlay-menu__nav" aria-label="Quant navigation">
+      <a href="index.html" class="overlay-link">Stochastic Analysis</a>
+      <a href="market-risk.html" class="overlay-link">Market Risk</a>
+      <a href="counterparty-risk.html" class="overlay-link">Counterparty Credit Risk</a>
+      <a href="interest-rate-models.html" class="overlay-link is-active">Interest Rate Models</a>
+      <a href="resume.html" class="overlay-link">Resume</a>
+    </nav>
+  </div>
+
+  <header class="site-header" data-menu="bar">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">Stochastic Lab</a>
+      <button class="nav-toggle" data-menu="toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a class="desktop-nav__link" href="index.html">Stochastic Analysis</a>
+        <a class="desktop-nav__link" href="market-risk.html">Market Risk</a>
+        <a class="desktop-nav__link" href="counterparty-risk.html">Counterparty Credit Risk</a>
+        <a class="desktop-nav__link is-active" href="interest-rate-models.html">Interest Rate Models</a>
+        <a class="desktop-nav__link" href="resume.html">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-layout">
+    <aside class="page-nav" aria-label="On-page navigation">
+      <h2 class="page-nav__title">On this page</h2>
+      <ol class="page-nav__list">
+        <li><a class="page-nav__link is-active" href="#purpose">Purpose &amp; modelling landscape</a></li>
+        <li><a class="page-nav__link" href="#riskfree-neutral">Risk-free &amp; neutral rates</a></li>
+        <li><a class="page-nav__link" href="#frameworks">General frameworks</a></li>
+        <li><a class="page-nav__link" href="#representative-models">Representative models</a></li>
+        <li><a class="page-nav__link" href="#term-explorer">Interactive term-structure explorer</a></li>
+        <li><a class="page-nav__link" href="#model-checklist">Model selection checklist</a></li>
+      </ol>
+    </aside>
+
+    <div class="page-content">
+      <section id="purpose" class="page-section">
+        <div class="irm-card">
+          <div class="section-eyebrow">Interest-rate modelling</div>
+          <h1>Purpose &amp; modelling landscape</h1>
+          <p>
+            Interest rate models describe the evolution of short-term rates, the entire yield curve, or discrete market
+            rates. They price swaps and swaptions, support balance-sheet asset-liability management, and value exotic
+            derivatives whose cash flows depend on future term structures.
+          </p>
+          <div class="callout">
+            <strong>Modelling philosophies.</strong> Short-rate dynamics (e.g., Vasicek, CIR) track a single instantaneous
+            rate; forward-rate Heath–Jarrow–Morton (HJM) models evolve the entire forward curve; market models such as the
+            Libor Market Model (LMM) evolve observable forward rates. Each balances tractability, realism, and calibration
+            effort.
+          </div>
+        </div>
+      </section>
+
+      <section id="riskfree-neutral" class="page-section">
+        <div class="irm-card">
+          <h2>Risk-free &amp; neutral rates</h2>
+          <p>
+            The <strong>risk-free rate</strong> is a proxy derived from collateralised overnight funding, overnight index
+            swaps (OIS), or high-quality government securities. It anchors the discount curve for collateralised cash flows
+            under modern XVA-aware pricing.<sup>[1]</sup>
+          </p>
+          <p>
+            The <strong>neutral (long-run) rate</strong> represents the equilibrium level consistent with stable inflation
+            and full employment. In mean-reverting short-rate models, it is the long-run mean \( \theta \).
+          </p>
+          <div class="callout">
+            Calibration aligns model parameters to today’s yield curve, while the neutral rate guides macro stress
+            scenarios and long-horizon projections.
+          </div>
+        </div>
+      </section>
+
+      <section id="frameworks" class="page-section">
+        <div class="irm-card">
+          <h2>General frameworks</h2>
+          <div class="framework-grid">
+            <div class="market-subcard">
+              <h3>Short-rate models</h3>
+              <p>
+                Model the instantaneous rate \( r_t \) via stochastic differential equations (SDEs). The canonical
+                mean-reverting form is
+              </p>
+              <div class="callout">$$ dr_t = \kappa(\theta - r_t)\,dt + \sigma\,dW_t $$</div>
+              <p>
+                Vasicek and Hull–White deliver Gaussian rates (negative values allowed), while CIR uses a square-root
+                diffusion to enforce non-negativity.
+              </p>
+            </div>
+            <div class="market-subcard">
+              <h3>Forward-rate (HJM) models</h3>
+              <p>
+                Heath–Jarrow–Morton specifies dynamics for the instantaneous forward curve \( f(t,T) \). Drift restrictions
+                ensure no arbitrage. HJM is flexible but usually requires factor reduction or discretisation for
+                implementation.
+              </p>
+            </div>
+            <div class="market-subcard">
+              <h3>Market models</h3>
+              <p>
+                Evolve observable rates such as forward Libor or swap rates. Calibration matches quoted caplet/swaption
+                volatility surfaces: the Libor Market Model (LMM/BGM) is a popular choice for callable exotics via Monte
+                Carlo.
+              </p>
+            </div>
+            <div class="market-subcard">
+              <h3>Affine &amp; multi-curve extensions</h3>
+              <p>
+                Affine term-structure models yield exponential-affine bond prices with closed-form yields. Post-crisis
+                frameworks separate discount and projection curves, embedding credit/funding valuation adjustments (XVAs).
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="representative-models" class="page-section">
+        <div class="irm-card">
+          <h2>Representative models &amp; formulas</h2>
+          <div class="framework-grid">
+            <div class="market-subcard">
+              <h3>Vasicek (Ornstein–Uhlenbeck)</h3>
+              <div class="callout">$$ dr_t = \kappa(\theta - r_t)\,dt + \sigma\,dW_t $$</div>
+              <p>Gaussian, mean-reverting; supports analytic bond prices but permits negative rates.</p>
+              <p><strong>Pros:</strong> closed-form solutions. <strong>Cons:</strong> negative-rate risk.</p>
+            </div>
+            <div class="market-subcard">
+              <h3>Cox–Ingersoll–Ross (CIR)</h3>
+              <div class="callout">$$ dr_t = \kappa(\theta - r_t)\,dt + \sigma\sqrt{r_t}\,dW_t $$</div>
+              <p>Square-root diffusion keeps rates non-negative; bond prices admit closed-form expressions.</p>
+              <p><strong>Pros:</strong> positivity. <strong>Cons:</strong> calibration to vol surfaces harder.</p>
+            </div>
+            <div class="market-subcard">
+              <h3>Hull–White (extended Vasicek)</h3>
+              <div class="callout">$$ dr_t = \kappa(\theta(t) - r_t)\,dt + \sigma\,dW_t $$</div>
+              <p>Time-dependent drift fits the initial curve exactly and retains analytic swaption formulas.</p>
+              <p><strong>Pros:</strong> flexible fit. <strong>Cons:</strong> negative rates possible.</p>
+            </div>
+            <div class="market-subcard">
+              <h3>Libor Market Model</h3>
+              <p>Evolves forward Libor rates under their natural measures, matching caplet volatilities; supports
+                callable exotics via Monte Carlo simulation.</p>
+              <p><strong>Pros:</strong> market-consistent. <strong>Cons:</strong> Monte Carlo intensive.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="term-explorer" class="page-section">
+        <div class="irm-card">
+          <h2>Interactive term-structure explorer</h2>
+          <p>
+            Adjust core parameters of a one-factor mean-reverting model. The expected short-rate path assumes Vasicek
+            dynamics; we also plot spot-yield curves implied by spot-wise integration. Higher \( \kappa \) speeds mean
+            reversion (flatter long-end); higher \( \sigma \) widens uncertainty.
+          </p>
+          <div class="market-grid">
+            <form class="market-form" onsubmit="return false;">
+              <div class="control-group">
+                <label for="irmInitialRate">Initial short rate $r_0$ (%)</label>
+                <input type="number" id="irmInitialRate" value="2.5" step="0.1" />
+              </div>
+              <div class="control-group">
+                <label for="irmLongRunRate">Long-run level $\theta$ (%)</label>
+                <input type="number" id="irmLongRunRate" value="3.5" step="0.1" />
+              </div>
+              <div class="control-group">
+                <label for="irmMeanReversion">Mean reversion $\kappa$</label>
+                <input type="number" id="irmMeanReversion" value="0.6" step="0.05" min="0.05" />
+              </div>
+              <div class="control-group">
+                <label for="irmVolatility">Volatility $\sigma$ (%)</label>
+                <input type="number" id="irmVolatility" value="1.5" step="0.1" min="0" />
+              </div>
+              <div class="control-group">
+                <label for="irmTilt">Hull–White tilt (bps)</label>
+                <input type="number" id="irmTilt" value="120" step="10" />
+              </div>
+              <div class="control-group">
+                <label for="irmDecay">Tilt decay $\beta$</label>
+                <input type="number" id="irmDecay" value="4" step="0.5" min="0.5" />
+              </div>
+              <button class="primary-button" id="irmReset">Reset defaults</button>
+            </form>
+            <div class="market-subcard">
+              <div class="market-tail-chart">
+                <canvas id="irmShortRateChart"></canvas>
+              </div>
+              <p class="market-note">
+                The deterministic expectation of Vasicek/Hull–White reverts toward $\theta$. Higher $\kappa$ flattens the
+                path; higher $\sigma$ increases volatility bands (not shown).
+              </p>
+            </div>
+            <div class="market-subcard">
+              <div class="market-tail-chart">
+                <canvas id="irmYieldChart"></canvas>
+              </div>
+              <p class="market-note">
+                Spot yields average expected short rates across maturities. Tilt parameters adjust the initial slope to
+                match the observed term structure.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="model-checklist" class="page-section">
+        <div class="irm-card">
+          <h2>Model selection checklist</h2>
+          <table class="market-table">
+            <thead>
+              <tr>
+                <th>Consideration</th>
+                <th>Short-rate models</th>
+                <th>Market models</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Calibration inputs</td>
+                <td>Yield curves, swaption/swap spreads, mean-reversion assumptions.</td>
+                <td>Caplet/swaption vol surfaces, forward-rate observations.</td>
+              </tr>
+              <tr>
+                <td>Analytical tractability</td>
+                <td>Closed-form bonds; analytic swaption formulas (Vasicek, Hull–White).</td>
+                <td>Monte Carlo heavy; limited closed-form payoffs.</td>
+              </tr>
+              <tr>
+                <td>Term-structure twists</td>
+                <td>One-factor models struggle; multi-factor extensions handle twists.</td>
+                <td>Rich factor structure captures tenor-dependent volatility.</td>
+              </tr>
+              <tr>
+                <td>Negative rates</td>
+                <td>Gaussian models allow; CIR avoids but may be restrictive.</td>
+                <td>Depends on modelling choice (shifted lognormal etc.).</td>
+              </tr>
+              <tr>
+                <td>Use cases</td>
+                <td>Balance-sheet ALM, risk-neutral discounting, stress testing.</td>
+                <td>Exotic derivatives, callable products, structured notes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="further-reading">
+        <h2>Further reading</h2>
+        <ol class="footnote-list">
+          <li>[1] Basel Committee on Banking Supervision, <em>Minimum capital requirements for market risk</em>, BIS.</li>
+          <li>[2] Brigo &amp; Mercurio, <em>Interest Rate Models – Theory and Practice</em>.</li>
+          <li>[3] Andersen &amp; Piterbarg, <em>Interest Rate Modeling</em>.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="script.js"></script>
+  <script src="interest-rate-models.js"></script>
+</body>
+</html>
