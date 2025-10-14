@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Market Risk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="overlay-menu" data-menu="overlay" aria-hidden="true">
+    <button class="overlay-menu__close" data-menu="close" aria-label="Close navigation">
+      <span></span><span></span>
+    </button>
+    <nav id="mobile-menu" class="overlay-menu__nav" aria-label="Quant navigation">
+      <a href="index.html" class="overlay-link">Stochastic Analysis</a>
+      <a href="market-risk.html" class="overlay-link is-active">Market Risk</a>
+      <a href="counterparty-risk.html" class="overlay-link">Counterparty Credit Risk</a>
+      <a href="interest-rate-models.html" class="overlay-link">Interest Rate Models</a>
+      <a href="resume.html" class="overlay-link">Resume</a>
+    </nav>
+  </div>
+
+  <header class="site-header" data-menu="bar">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">Stochastic Lab</a>
+      <button class="nav-toggle" data-menu="toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a class="desktop-nav__link" href="index.html">Stochastic Analysis</a>
+        <a class="desktop-nav__link is-active" href="market-risk.html">Market Risk</a>
+        <a class="desktop-nav__link" href="counterparty-risk.html">Counterparty Credit Risk</a>
+        <a class="desktop-nav__link" href="interest-rate-models.html">Interest Rate Models</a>
+        <a class="desktop-nav__link" href="resume.html">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="market-hero">
+      <div class="section-eyebrow">Risk Measurement</div>
+      <h1>Market Risk</h1>
+      <p class="market-hero__lead">
+        Market risk is the risk of losses that arises from movements in market prices.<sup>[1]</sup> It covers trading book
+        instruments and certain foreign-exchange or commodity positions held in the banking book.<sup>[1]</sup>
+      </p>
+    </section>
+
+    <section class="market-section" id="definitions">
+      <div class="market-card">
+        <h2>Introduction &amp; definitions</h2>
+        <p>
+          The Basel market-risk framework groups risk factors into six broad classes subject to capital requirements:
+          default risk, interest-rate risk, credit-spread risk, equity risk, foreign-exchange (FX) risk, and commodities
+          risk.<sup>[1]</sup>
+        </p>
+        <div class="market-sensitivity-grid">
+          <div class="market-subcard">
+            <h3>Where market risk lives</h3>
+            <ul class="market-sensitivity-legend">
+              <li><strong>Trading book.</strong> Derivatives, securities financing and trading portfolios marked to market.</li>
+              <li><strong>Banking book FX/commodities.</strong> Structural positions still exposed to FX and commodity moves.</li>
+            </ul>
+          </div>
+          <div class="market-subcard">
+            <h3>Key measurements</h3>
+            <ul class="market-sensitivity-legend">
+              <li>Value at Risk (VaR) and Expected Shortfall (ES).</li>
+              <li>Sensitivity-based capital add-ons (PV01, CS01, delta spot, vega, etc.).</li>
+              <li>Stress testing, scenario analysis, and model backtesting.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="measure-types">
+      <div class="market-card">
+        <h2>Market risk measures</h2>
+        <div class="market-tabs">
+          <details open>
+            <summary>Value at Risk (VaR)</summary>
+            <p>
+              VaR is the worst expected loss over a specified horizon at a given confidence level.<sup>[1]</sup> Parametric
+              (variance–covariance) VaR assumes normally distributed returns:<sup>[2][3]</sup>
+            </p>
+            <div class="callout">
+              $$ \text{VaR} = V_0 \times Z \times \sigma \times \sqrt{t} $$
+              $$ \text{VaR} = \mu - z\,\sigma $$
+            </div>
+            <p>
+              where <span class="math">V_0</span> is portfolio value, <span class="math">Z</span> the z-score (1.645 for 95%,
+              2.326 for 99%), <span class="math">\sigma</span> volatility and <span class="math">t</span> the time horizon.
+              Historical simulation derives VaR from empirical P&amp;L, while Monte Carlo generates many simulated market
+              paths. Regulators increasingly benchmark VaR with Expected Shortfall (ES), the mean loss beyond the VaR tail.
+            </p>
+          </details>
+          <details>
+            <summary>Expected Shortfall (ES)</summary>
+            <p>
+              ES is the average of all losses exceeding VaR at the chosen confidence level. Under the Basel FRTB, ES
+              replaces VaR as the primary risk metric for capital because it captures tail severity.<sup>[1]</sup>
+            </p>
+          </details>
+          <details>
+            <summary>Stress testing &amp; scenario analysis</summary>
+            <p>
+              Banks must maintain routine, rigorous stress testing, review results at least monthly, integrate outcomes
+              into Internal Capital Adequacy Assessments (ICAAP) and risk limits, and take mitigating action when
+              vulnerabilities are identified.<sup>[1]</sup>
+            </p>
+          </details>
+          <details>
+            <summary>Backtesting</summary>
+            <p>
+              Daily actual and hypothetical P&amp;L are compared with model-generated VaR to verify model conservatism and to
+              satisfy regulatory backtesting standards.<sup>[1]</sup>
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+    <section class="market-section" id="sensitivities">
+      <div class="market-card market-card--stacked">
+        <h2>Sensitivities &amp; Greeks</h2>
+        <p>
+          Basel’s sensitivity-based approach aggregates PV01, CS01, equity/FX/commodity deltas, and vega risk.<sup>[1]</sup>
+          Option Greeks (delta, gamma, vega, theta, rho) and second-order Greeks (vanna, volga, charm) capture directional
+          and convexity effects used in risk management.<sup>[4]</sup>
+        </p>
+        <div class="market-three-column">
+          <form class="market-form market-panel" id="sensitivityForm" onsubmit="return false;">
+            <div class="control-group">
+              <label for="pv01Input">PV01 (per bp)</label>
+              <input type="number" id="pv01Input" value="2500" step="100" title="Change in value for a 1 bp parallel interest-rate move." />
+            </div>
+            <div class="control-group">
+              <label for="cs01Input">CS01 (per bp)</label>
+              <input type="number" id="cs01Input" value="1800" step="100" title="Change in value for a 1 bp credit spread move." />
+            </div>
+            <div class="control-group">
+              <label for="eqDeltaInput">Equity delta (per 1%)</label>
+              <input type="number" id="eqDeltaInput" value="15000" step="500" title="Sensitivity to a 1% change in equity prices." />
+            </div>
+            <div class="control-group">
+              <label for="fxDeltaInput">FX delta (per 1%)</label>
+              <input type="number" id="fxDeltaInput" value="12000" step="500" title="Sensitivity to a 1% change in FX rates." />
+            </div>
+            <div class="control-group">
+              <label for="cmdDeltaInput">Commodity delta (per 1%)</label>
+              <input type="number" id="cmdDeltaInput" value="8000" step="500" title="Sensitivity to a 1% change in commodity prices." />
+            </div>
+            <div class="control-group">
+              <label for="deltaInput">Option delta</label>
+              <input type="number" id="deltaInput" value="40" step="1" title="First-order option price sensitivity to the underlying." />
+            </div>
+            <div class="control-group">
+              <label for="gammaInput">Gamma</label>
+              <input type="number" id="gammaInput" value="6" step="0.5" title="Rate of change of delta with respect to the underlying." />
+            </div>
+            <div class="control-group">
+              <label for="vegaInput">Vega</label>
+              <input type="number" id="vegaInput" value="1300" step="50" title="Sensitivity to implied volatility changes." />
+            </div>
+            <div class="control-group">
+              <label for="thetaInput">Theta (per day)</label>
+              <input type="number" id="thetaInput" value="-220" step="10" title="Daily time decay of option value." />
+            </div>
+            <div class="control-group">
+              <label for="rhoInput">Rho</label>
+              <input type="number" id="rhoInput" value="900" step="50" title="Sensitivity to interest-rate changes." />
+            </div>
+            <div class="control-group">
+              <label for="rateShockInput">Rate shock (bps)</label>
+              <input type="range" id="rateShockInput" min="-200" max="200" step="10" value="25" title="Parallel interest-rate shift in basis points." />
+            </div>
+            <div class="control-group">
+              <label for="spreadShockInput">Spread shock (bps)</label>
+              <input type="range" id="spreadShockInput" min="-300" max="300" step="10" value="50" title="Credit-spread shock in basis points." />
+            </div>
+            <div class="control-group">
+              <label for="eqShockInput">Equity move (%)</label>
+              <input type="range" id="eqShockInput" min="-20" max="20" step="1" value="2" title="Equity index shock in percent." />
+            </div>
+            <div class="control-group">
+              <label for="fxShockInput">FX/commodity move (%)</label>
+              <input type="range" id="fxShockInput" min="-15" max="15" step="1" value="1" title="FX or commodity price shock in percent." />
+            </div>
+            <div class="control-group">
+              <label for="priceChangeInput">Underlying change $\Delta S$</label>
+              <input type="range" id="priceChangeInput" min="-10" max="10" step="0.5" value="1.5" title="Absolute change in underlying price for option sensitivities." />
+            </div>
+            <div class="control-group">
+              <label for="volChangeInput">Volatility change $\Delta \sigma$</label>
+              <input type="range" id="volChangeInput" min="-0.1" max="0.1" step="0.005" value="0.015" title="Implied volatility shock." />
+            </div>
+            <div class="control-group">
+              <label for="timeChangeInput">Time change (days)</label>
+              <input type="range" id="timeChangeInput" min="-10" max="10" step="1" value="-1" title="Forward shift in days used for theta." />
+            </div>
+            <div class="control-group">
+              <label for="rateChangeInput">Rate change $\Delta r$</label>
+              <input type="range" id="rateChangeInput" min="-0.02" max="0.02" step="0.001" value="0.001" title="Interest-rate move for rho." />
+            </div>
+          </form>
+          <div class="market-subcard" aria-live="polite">
+            <div class="market-tail-chart market-tail-chart--fixed">
+              <canvas id="sensitivityChart" aria-label="P&L contribution by sensitivity" role="img"></canvas>
+            </div>
+            <table class="market-table market-summary-table" aria-label="Sensitivity contributions summary">
+              <thead>
+                <tr>
+                  <th>Sensitivity</th>
+                  <th>Contribution ($)</th>
+                </tr>
+              </thead>
+              <tbody id="sensitivityTableBody"></tbody>
+              <tfoot>
+                <tr>
+                  <th>Total</th>
+                  <th id="sensitivityTotal">-</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="market-subcard">
+            <h3>Greeks summary</h3>
+            <div class="callout">
+              <ul class="market-sensitivity-legend">
+                <li><strong>Delta:</strong> price sensitivity.</li>
+                <li><strong>Gamma:</strong> change of delta with the underlying.<sup>[4]</sup></li>
+                <li><strong>Vega:</strong> sensitivity to implied volatility.</li>
+                <li><strong>Theta:</strong> time decay.</li>
+                <li><strong>Rho:</strong> sensitivity to interest rates.</li>
+                <li><strong>Vanna:</strong> cross-sensitivity of delta and volatility.</li>
+                <li><strong>Volga:</strong> curvature of vega.</li>
+                <li><strong>Charm:</strong> time decay of delta.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="market-section" id="var-calculator">
+      <div class="market-card market-card--stacked">
+        <h2>Risk measure results</h2>
+        <p>
+          Parametric VaR applies \( \text{VaR} = V_0 z \sigma \sqrt{t} \) with confidence-specific \( z \) values (1.645 for 95%,
+          2.326 for 99%).<sup>[2]</sup> Expected Shortfall averages the losses beyond the VaR cut-off.<sup>[1]</sup> The mean–variance
+          expression \( \mu - z\sigma \) shows how expected returns interact with volatility.<sup>[3]</sup>
+        </p>
+        <div class="market-grid market-grid--two">
+          <form class="market-form market-panel" id="varForm" onsubmit="return false;">
+            <div class="control-group">
+              <label for="portfolioValueInput">Portfolio value \(V_0\) ($)</label>
+              <input type="number" id="portfolioValueInput" value="1000000" min="0" step="1000" title="Current portfolio market value." />
+            </div>
+            <div class="control-group">
+              <label for="meanReturnInput">Annual mean return \( \mu \)</label>
+              <input type="number" id="meanReturnInput" value="0.08" step="0.01" title="Expected annual return (decimal)." />
+            </div>
+            <div class="control-group">
+              <label for="volatilityInput">Annual volatility \( \sigma \)</label>
+              <input type="number" id="volatilityInput" value="0.2" min="0" max="5" step="0.01" title="Annualised standard deviation of returns." />
+            </div>
+            <div class="control-group">
+              <label for="horizonInput">Horizon (days)</label>
+              <input type="number" id="horizonInput" value="10" min="1" max="252" title="VaR horizon in trading days." />
+            </div>
+            <div class="control-group">
+              <label for="confidenceInput">Confidence level (%)</label>
+              <input type="number" id="confidenceInput" value="95" min="90" max="99.9" step="0.1" title="Confidence level for VaR/ES." />
+            </div>
+          </form>
+          <div class="market-subcard">
+            <h3>Outputs</h3>
+            <ul class="metric-list">
+              <li class="metric-list__row">
+                <span class="metric-list__label">VaR (absolute)</span>
+                <span class="metric-list__value" id="varParametric">-</span>
+              </li>
+              <li class="metric-list__row">
+                <span class="metric-list__label">VaR (% of \(V_0\))</span>
+                <span class="metric-list__value" id="varPercent">-</span>
+              </li>
+              <li class="metric-list__row">
+                <span class="metric-list__label">Expected Shortfall</span>
+                <span class="metric-list__value" id="varEs">-</span>
+              </li>
+              <li class="metric-list__row">
+                <span class="metric-list__label">Mean–variance VaR (\(\mu - z\sigma\))</span>
+                <span class="metric-list__value" id="varMeanVar">-</span>
+              </li>
+              <li class="metric-list__row">
+                <span class="metric-list__label">Z-score</span>
+                <span class="metric-list__value" id="varZScore">-</span>
+              </li>
+            </ul>
+            <div class="market-tail-chart market-tail-chart--fixed">
+              <canvas id="varChart" aria-label="Normal distribution tail highlighting VaR" role="img"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="stress-testing">
+      <div class="market-card">
+        <h2>Stress testing &amp; model governance</h2>
+        <p>
+          FRTB requires routine, rigorous stress testing with monthly review by senior management; results must feed capital
+          adequacy assessments and risk limits.<sup>[1]</sup> Internal models must be documented, independently validated,
+          backtested and approved by supervisors.<sup>[1]</sup>
+        </p>
+        <div class="callout callout--accent">
+          Stress programmes should cover severe but plausible scenarios (market crashes, liquidity squeezes, counterparty
+          defaults) and prompt hedging or de-risking when vulnerabilities emerge.<sup>[1]</sup>
+        </div>
+        <div class="market-stress-grid">
+          <div class="market-subcard">
+            <form class="market-form" onsubmit="return false;">
+              <div class="control-group">
+                <label for="stressVarInput">Baseline VaR ($)</label>
+                <input type="number" id="stressVarInput" value="2500000" step="10000" />
+              </div>
+              <div class="control-group">
+                <label for="stressEsInput">Baseline ES ($)</label>
+                <input type="number" id="stressEsInput" value="3200000" step="10000" />
+              </div>
+              <div class="control-group">
+                <label for="stressRateShock">Interest-rate shock (bps)</label>
+                <input type="number" id="stressRateShock" value="200" step="25" />
+              </div>
+              <div class="control-group">
+                <label for="stressEquityShock">Equity price shock (%)</label>
+                <input type="number" id="stressEquityShock" value="-30" step="1" />
+              </div>
+              <div class="control-group">
+                <label for="stressVolShock">Volatility shock (Δσ)</label>
+                <input type="number" id="stressVolShock" value="0.1" step="0.01" />
+              </div>
+              <div class="control-group">
+                <label for="stressCorrelation">Wrong-way correlation</label>
+                <input type="range" id="stressCorrelation" min="-0.5" max="0.5" step="0.05" value="0.25" />
+                <span id="stressCorrelationLabel">0.25</span>
+              </div>
+            </form>
+          </div>
+          <div class="market-subcard">
+            <div class="market-results" id="stressResults">
+              <div><strong>Stressed VaR:</strong> <span id="stressVarResult">-</span></div>
+              <div><strong>Stressed ES:</strong> <span id="stressEsResult">-</span></div>
+              <div><strong>ΔVaR:</strong> <span id="stressVarChange">-</span></div>
+              <div><strong>ΔES:</strong> <span id="stressEsChange">-</span></div>
+            </div>
+            <p class="market-note">
+              The simple tool scales VaR/ES by rate, equity and volatility shocks plus a wrong-way correlation term.
+              Institutions should complement this with full revaluation and multi-factor scenarios.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="further-reading">
+      <h2>Further reading</h2>
+      <ol class="footnote-list">
+        <li>
+          [1]
+          <a href="https://www.bis.org/basel_framework/chapter/MAR/30.htm" target="_blank" rel="noopener noreferrer">
+            Basel Committee on Banking Supervision – Minimum capital requirements for market risk
+          </a>
+          definitions of VaR and Expected Shortfall.
+        </li>
+        <li>
+          [2]
+          <a href="https://www.bis.org/publ/bcbs352.htm" target="_blank" rel="noopener noreferrer">
+            BIS FRTB overview – Parametric VaR calculation and regulatory calibration
+          </a>.
+        </li>
+        <li>
+          [3]
+          <a href="https://www.investopedia.com/terms/v/valueatrisk.asp" target="_blank" rel="noopener noreferrer">
+            Investopedia – Value at Risk (VaR) overview and mean–variance intuition
+          </a>.
+        </li>
+        <li>
+          [4]
+          <a href="https://quant-next.com/option-greeks-guide/" target="_blank" rel="noopener noreferrer">
+            Quant-Next – Option Greeks and second-order Greeks
+          </a>.
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="script.js"></script>
+  <script src="market-risk.js"></script>
+</body>
+</html>

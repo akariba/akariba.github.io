@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Counterparty Credit Risk (CCR)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="overlay-menu" data-menu="overlay" aria-hidden="true">
+    <button class="overlay-menu__close" data-menu="close" aria-label="Close navigation">
+      <span></span><span></span>
+    </button>
+    <nav id="mobile-menu" class="overlay-menu__nav" aria-label="Quant navigation">
+      <a href="index.html" class="overlay-link">Stochastic Analysis</a>
+      <a href="market-risk.html" class="overlay-link">Market Risk</a>
+      <a href="counterparty-risk.html" class="overlay-link is-active">Counterparty Credit Risk</a>
+      <a href="interest-rate-models.html" class="overlay-link">Interest Rate Models</a>
+      <a href="resume.html" class="overlay-link">Resume</a>
+    </nav>
+  </div>
+
+  <header class="site-header" data-menu="bar">
+    <div class="site-header__inner">
+      <a class="brand" href="index.html">Stochastic Lab</a>
+      <button class="nav-toggle" data-menu="toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a class="desktop-nav__link" href="index.html">Stochastic Analysis</a>
+        <a class="desktop-nav__link" href="market-risk.html">Market Risk</a>
+        <a class="desktop-nav__link is-active" href="counterparty-risk.html">Counterparty Credit Risk</a>
+        <a class="desktop-nav__link" href="interest-rate-models.html">Interest Rate Models</a>
+        <a class="desktop-nav__link" href="resume.html">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="market-hero">
+      <div class="section-eyebrow">Counterparty Risk Metrics</div>
+      <h1>Counterparty Credit Risk (CCR)</h1>
+      <p class="market-hero__lead">
+        Counterparty credit risk is the possibility that the party on the other side of a derivative, securities-financing
+        or trading agreement defaults before final settlement, creating a loss. Unlike traditional loan credit risk, the
+        exposure itself is stochastic and can be positive (a claim on the counterparty) or negative (an amount owed to the
+        counterparty)<sup>[1]</sup> — only positive exposures drive CCR capital and valuation adjustments.
+      </p>
+    </section>
+
+    <section class="market-section" id="exposure-metrics">
+      <div class="market-card">
+        <h2>Exposure metrics</h2>
+        <p>
+          Exposure modelling produces the inputs used by credit limits, CVA desks, and regulatory capital. The core metrics
+          extend expected exposure over time and quantify extremes via confidence levels.<sup>[1][2][3]</sup>
+        </p>
+        <div class="market-grid">
+          <div class="market-subcard">
+            <strong>Expected Exposure (EE)</strong>
+            <p>Average future exposure at a given time, focusing on the positive part of the mark-to-market.</p>
+            <div class="callout">$$ EE(t) = \mathbb{E}[\max(V_t,0)] $$</div>
+          </div>
+          <div class="market-subcard">
+            <strong>Expected Positive Exposure (EPE)</strong>
+            <p>Time-average of positive exposures; only positive values contribute so EPE exceeds the expected value.</p>
+            <div class="callout">$$ \text{EPE} = \frac{1}{T}\int_0^T EE^+(t)\,dt $$</div>
+          </div>
+          <div class="market-subcard">
+            <strong>Average EPE / Loan Equivalent (LEQ)</strong>
+            <p>Weighted average of EPE used for capital rules. Effective EEPE is a discrete, time-weighted variant used in
+              Basel limits.</p>
+          </div>
+          <div class="market-subcard">
+            <strong>Expected Negative Exposure (ENE)</strong>
+            <p>Average of negative exposures — a liability position for the bank.</p>
+          </div>
+          <div class="market-subcard">
+            <strong>Potential Future Exposure (PFE)</strong>
+            <p>Quantile of exposure at a chosen confidence level (95% or 99%). Represents the worst replacement cost over
+              the horizon.</p>
+          </div>
+          <div class="market-subcard">
+            <strong>Effective EPE / EEPE</strong>
+            <p>Time-weighted averages used to translate stochastic exposures into loan-equivalent amounts for limits and
+              xVA metrics.</p>
+          </div>
+        </div>
+        <div class="market-grid">
+          <div class="market-subcard">
+            <form class="market-form" onsubmit="return false;">
+              <div class="control-group">
+                <label for="pfeConfidenceInput">PFE confidence level (%)</label>
+                <input type="range" id="pfeConfidenceInput" min="90" max="99.9" step="0.1" value="95" />
+                <span id="pfeConfidenceDisplay">95.0%</span>
+              </div>
+            </form>
+            <div class="market-results" id="exposureResults">
+              <div><strong>Expected positive exposure (EPE):</strong> <span id="metricEpe">-</span></div>
+              <div><strong>Loan-equivalent EPE:</strong> <span id="metricLeq">-</span></div>
+              <div><strong>Expected negative exposure (ENE):</strong> <span id="metricEne">-</span></div>
+              <div><strong>Peak PFE at selected confidence:</strong> <span id="metricPfe">-</span></div>
+            </div>
+            <div class="market-chart-container">
+              <canvas id="exposureChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="default-loss">
+      <div class="market-card">
+        <h2>Default probability &amp; loss</h2>
+        <p>
+          Real-world (physical) default probabilities stem from historical data; risk-neutral probabilities are inferred
+          from market instruments such as CDS and option-implied spreads.<sup>[1]</sup>
+        </p>
+        <div class="callout">
+          $$ \text{LGD} = (1 - \text{recovery rate}) \times \text{Exposure} $$
+          $$ \text{Expected Loss} = \text{Exposure} \times PD \times LGD $$
+          $$ \text{Expected Loss}(\%) = PD \times LGD $$
+        </div>
+        <div class="market-grid">
+          <div class="market-subcard">
+            <form class="market-form" onsubmit="return false;">
+              <div class="control-group">
+                <label for="lossExposureInput">Exposure ($)</label>
+                <input type="number" id="lossExposureInput" value="5000000" min="0" step="10000" />
+              </div>
+              <div class="control-group">
+                <label for="lossPdInput">Probability of default (PD, %)</label>
+                <input type="number" id="lossPdInput" value="1.2" min="0" max="100" step="0.01" />
+              </div>
+              <div class="control-group">
+                <label for="lossLgdInput">Loss given default (LGD, %)</label>
+                <input type="number" id="lossLgdInput" value="60" min="0" max="100" step="1" />
+              </div>
+            </form>
+            <div class="market-results" id="lossResults">
+              <div><strong>Expected loss:</strong> <span id="lossAbsolute">-</span></div>
+              <div><strong>Expected loss (%):</strong> <span id="lossPercent">-</span></div>
+            </div>
+          </div>
+          <div class="market-subcard">
+            <p>
+              Risk managers compare physical and risk-neutral PDs to reconcile credit views with market pricing. Higher
+              LGD amplifies losses linearly, while EPE and PFE define the exposure input for EL and capital charges.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="cva">
+      <div class="market-card">
+        <h2>Credit valuation adjustment (CVA)</h2>
+        <p>
+          CVA is the mark-to-market deduction applied to a derivative to cover expected loss from counterparty default.
+          A simplified discrete-time approximation is:
+        </p>
+        <div class="callout">
+          $$ \text{CVA} = (1 - R) \sum_{i=1}^{N} DF(t_i) \times EE(t_i) \times [PD(t_{i-1}) - PD(t_i)] $$
+        </div>
+        <p>
+          Here <span class="math">R</span> is recovery, <span class="math">DF(t_i)</span> are discount factors, and the term in
+          brackets is the incremental default probability over the interval.<sup>[1][4]</sup> This formulation assumes
+          independence between exposure and default (ignoring wrong-way risk).
+        </p>
+        <div class="market-subcard">
+          <div class="control-group">
+            <label for="cvaRecovery">Recovery rate R (%)</label>
+            <input type="number" id="cvaRecovery" value="40" min="0" max="100" step="1" />
+          </div>
+          <table class="market-table cva-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Discount factor DF</th>
+                <th>EE ($m)</th>
+                <th>ΔPD (%, interval)</th>
+                <th>Contribution ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Year 1</td>
+                <td><input type="number" step="0.001" value="0.99" id="cvaDf0" /></td>
+                <td><input type="number" step="0.1" value="1.2" id="cvaEe0" /></td>
+                <td><input type="number" step="0.01" value="0.4" id="cvaDeltaPd0" /></td>
+                <td><span id="cvaContribution0">-</span></td>
+              </tr>
+              <tr>
+                <td>Year 2</td>
+                <td><input type="number" step="0.001" value="0.97" id="cvaDf1" /></td>
+                <td><input type="number" step="0.1" value="1.5" id="cvaEe1" /></td>
+                <td><input type="number" step="0.01" value="0.5" id="cvaDeltaPd1" /></td>
+                <td><span id="cvaContribution1">-</span></td>
+              </tr>
+              <tr>
+                <td>Year 3</td>
+                <td><input type="number" step="0.001" value="0.94" id="cvaDf2" /></td>
+                <td><input type="number" step="0.1" value="1.3" id="cvaEe2" /></td>
+                <td><input type="number" step="0.01" value="0.6" id="cvaDeltaPd2" /></td>
+                <td><span id="cvaContribution2">-</span></td>
+              </tr>
+              <tr>
+                <td>Year 4</td>
+                <td><input type="number" step="0.001" value="0.91" id="cvaDf3" /></td>
+                <td><input type="number" step="0.1" value="1.0" id="cvaEe3" /></td>
+                <td><input type="number" step="0.01" value="0.7" id="cvaDeltaPd3" /></td>
+                <td><span id="cvaContribution3">-</span></td>
+              </tr>
+              <tr>
+                <td>Year 5</td>
+                <td><input type="number" step="0.001" value="0.88" id="cvaDf4" /></td>
+                <td><input type="number" step="0.1" value="0.7" id="cvaEe4" /></td>
+                <td><input type="number" step="0.01" value="0.8" id="cvaDeltaPd4" /></td>
+                <td><span id="cvaContribution4">-</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="market-results">
+            <div><strong>Total CVA:</strong> <span id="cvaResult">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="stress-testing">
+      <div class="market-card">
+        <h2>Stress testing &amp; scenarios</h2>
+        <p>
+          Stress testing evaluates CCR exposures under extreme yet plausible market conditions and is mandated for banks
+          with material trading activities.<sup>[5]</sup> Results feed into exposure limits, liquidity planning, concentration
+          monitoring, and recovery playbooks.
+        </p>
+        <div class="callout callout--accent">
+          <strong>Supervisory expectations.</strong> Apply severe and moderate shocks across interest rates, equities,
+          credit spreads and liquidity factors; run tests at least quarterly; aggregate exposures across all trading
+          activities; include wrong-way risk and CVA stress; and align CCR stress tests with firm-wide programmes and Basel
+          principles.<sup>[5]</sup>
+        </div>
+        <div class="market-grid">
+          <div class="market-subcard">
+            <h3>Single-factor &amp; multi-factor scenarios</h3>
+            <p>
+              Single-factor shocks revalue exposures using individual stresses, e.g. +200 bps rates, −30% equities
+              or +50% credit spreads. Multi-factor scenarios combine shocks to capture interactions and market illiquidity.
+              Stressed exposure can be proxied by multiplying baseline exposure by <span class="math">(1 + \text{shock})</span>
+              or by revaluing the underlying derivatives.
+            </p>
+          </div>
+          <div class="market-subcard">
+            <form class="market-form" onsubmit="return false;">
+              <div class="control-group">
+                <label for="stressEpe">Baseline EPE ($)</label>
+                <input type="number" id="stressEpe" value="5000000" step="10000" />
+              </div>
+              <div class="control-group">
+                <label for="stressPfe">Baseline PFE ($)</label>
+                <input type="number" id="stressPfe" value="7000000" step="10000" />
+              </div>
+              <div class="control-group">
+                <label for="stressPd">Baseline PD (%)</label>
+                <input type="number" id="stressPd" value="1" step="0.1" min="0" max="100" />
+              </div>
+              <div class="control-group">
+                <label for="stressLgd">LGD (%)</label>
+                <input type="number" id="stressLgd" value="60" step="1" min="0" max="100" />
+              </div>
+              <div class="control-group">
+                <label for="stressInterest">Interest-rate shock (decimal)</label>
+                <input type="number" id="stressInterest" value="0.02" step="0.005" />
+              </div>
+              <div class="control-group">
+                <label for="stressEquity">Equity shock (decimal)</label>
+                <input type="number" id="stressEquity" value="-0.2" step="0.01" />
+              </div>
+              <div class="control-group">
+                <label for="stressCredit">Credit-spread shock (decimal)</label>
+                <input type="number" id="stressCredit" value="0.5" step="0.05" />
+              </div>
+              <div class="control-group">
+                <label for="stressCorrelation">Wrong-way correlation coefficient</label>
+                <input type="range" id="stressCorrelation" min="-0.5" max="0.5" step="0.05" value="0.2" />
+                <span id="stressCorrelationDisplay">0.20</span>
+              </div>
+            </form>
+            <div class="market-results" id="stressResults">
+              <div><strong>Baseline EL:</strong> <span id="stressElBase">-</span></div>
+              <div><strong>Stressed EPE:</strong> <span id="stressEpeResult">-</span></div>
+              <div><strong>Stressed PFE:</strong> <span id="stressPfeResult">-</span></div>
+              <div><strong>Stressed EL:</strong> <span id="stressElResult">-</span></div>
+              <div><strong>CVA stress (approx):</strong> <span id="stressCvaResult">-</span></div>
+            </div>
+          </div>
+        </div>
+        <p>
+          Concurrent stress testing of exposure and non-cash collateral highlights wrong-way risk, while stressed CVA
+          allows desks to reserve for additional losses if counterparties weaken.<sup>[5]</sup>
+        </p>
+      </div>
+    </section>
+
+    <section class="market-section" id="pd-models">
+      <div class="market-card">
+        <h2>Probability of default models</h2>
+        <p>
+          Intensity models describe default via a hazard rate <span class="math">\lambda(t)</span>; the probability of default
+          in a short interval <span class="math">dt</span> is <span class="math">\lambda(t)\,dt</span>. Credit ratings often follow
+          discrete Markov chains where the next state depends only on the current state.<sup>[1]</sup>
+        </p>
+        <div class="callout">
+          $$ \mathbb{P}[\text{default on } (t, t+dt)] = \lambda(t)\,dt $$
+        </div>
+        <div class="market-grid market-greeks-grid">
+          <form class="markov-form" onsubmit="return false;">
+            <p class="markov-note">Set transition probabilities for each state (rows normalised automatically).</p>
+            <div class="markov-row" data-state="0">
+              <h3>AAA</h3>
+              <label>Stay AAA <input type="number" id="p00" min="0" max="1" step="0.05" value="0.92" /></label>
+              <label>Downgrade to BBB <input type="number" id="p01" min="0" max="1" step="0.05" value="0.06" /></label>
+              <label>Default <input type="number" id="p02" min="0" max="1" step="0.01" value="0.02" /></label>
+            </div>
+            <div class="markov-row" data-state="1">
+              <h3>BBB</h3>
+              <label>Upgrade to AAA <input type="number" id="p10" min="0" max="1" step="0.05" value="0.08" /></label>
+              <label>Stay BBB <input type="number" id="p11" min="0" max="1" step="0.05" value="0.82" /></label>
+              <label>Default <input type="number" id="p12" min="0" max="1" step="0.01" value="0.10" /></label>
+            </div>
+            <div class="markov-row" data-state="2">
+              <h3>Default</h3>
+              <label>Recover to AAA <input type="number" id="p20" min="0" max="1" step="0.05" value="0.00" /></label>
+              <label>Recover to BBB <input type="number" id="p21" min="0" max="1" step="0.05" value="0.25" /></label>
+              <label>Stay Default <input type="number" id="p22" min="0" max="1" step="0.05" value="0.75" /></label>
+            </div>
+            <label class="markov-periods">Projection periods
+              <input type="number" id="markovPeriods" min="1" max="12" value="6" />
+            </label>
+            <button class="primary-button" id="updateMarkov">Update simulation</button>
+          </form>
+          <div class="market-subcard">
+            <div class="markov-matrix" id="markovMatrix"></div>
+            <div class="markov-chart-container">
+              <canvas id="markovChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-section" id="risk-context">
+      <div class="market-card">
+        <h2>Risk metrics in context</h2>
+        <ul class="market-greeks-summary">
+          <li><strong>Basel capital.</strong> EE, EPE, PFE and effective EE feed into CCR capital and RWA calculations.</li>
+          <li><strong>xVA stack.</strong> CVA (credit), DVA (own default) and FVA (funding) adjust derivatives valuation and
+            pricing.</li>
+          <li><strong>Wrong-way vs right-way risk.</strong> Exposure that increases as credit quality deteriorates (e.g. short
+            CDS on the counterparty) is wrong-way; collateralised trades with declining exposure when spreads widen
+            exhibit right-way risk.<sup>[1]</sup></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="further-reading">
+      <h2>Further reading</h2>
+      <ol>
+        <li><a href="https://insights.londonfs.com" target="_blank" rel="noreferrer">London Financial Studies – CCR metrics &amp; CVA</a></li>
+        <li><a href="https://analystprep.com" target="_blank" rel="noreferrer">AnalystPrep – Expected loss and LGD formulas</a></li>
+        <li><a href="https://rmgfinancial.com" target="_blank" rel="noreferrer">RMG Financial Consulting – Exposure metrics definitions</a></li>
+        <li><a href="https://ipythonquant.wordpress.com" target="_blank" rel="noreferrer">iPythonQuant – CVA discretisation and formulas</a></li>
+        <li><a href="https://www.federalreserve.gov" target="_blank" rel="noreferrer">Federal Reserve – Interagency Supervisory Guidance on CCR</a></li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="script.js"></script>
+  <script src="ccr.js"></script>
+</body>
+</html>
